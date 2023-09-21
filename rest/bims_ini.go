@@ -15,7 +15,7 @@ type BimsConfiguration struct {
 func New() (*BimsConfiguration, error) {
 
 	// read config file
-	cfg, err := ini.Load("/root/TGSCA-Backend/config.ini")
+	cfg, err := ini.Load("/root/bims-backend/config.ini")
 	if err != nil {
 		return nil, fmt.Errorf("Fail to read file: %v", err)
 	}

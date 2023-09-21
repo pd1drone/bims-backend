@@ -43,7 +43,7 @@ func Routes() {
 		NoColor: true,
 	})
 
-	log.Print("Starting TGSCA Backend Service.....")
+	log.Print("Starting Bims Backend Service.....")
 	r := chi.NewRouter()
 
 	newBims, err := New()
@@ -61,6 +61,9 @@ func Routes() {
 
 	// Check route if service is running
 	r.Get("/check", newBims.check)
+
+	// Login route
+	r.Post("/login", newBims.Login)
 
 	log.Fatal(http.ListenAndServe("0.0.0.0:8085", r))
 }

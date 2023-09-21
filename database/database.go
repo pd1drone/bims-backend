@@ -12,7 +12,7 @@ func InitializeBIMSDatabase(dbname, username, password, dbhost, dbport string) (
 	bimsdb, err := sqlx.Connect("mysql", conn)
 
 	if err != nil {
-		return nil, fmt.Errorf("Error in initializing cad database: %s", err)
+		return nil, fmt.Errorf("Error in initializing bims database: %s", err)
 	}
 
 	return bimsdb, nil
