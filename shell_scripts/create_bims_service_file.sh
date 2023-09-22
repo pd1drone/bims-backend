@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Create the file tgsca_backend.service with the specified content
+# Create the file bims_backend.service with the specified content
 cat << EOF > /etc/systemd/system/bims_backend.service
 [Unit]
-Description=TGSCA backend http server
+Description=bims backend http server
 After=mariadb.service
 
 [Service]

@@ -65,6 +65,43 @@ func Routes() {
 	// Login route
 	r.Post("/login", newBims.Login)
 
+	// Change password route
+	r.Post("/change_password", newBims.ChangePassword)
+
+	// Upload User Profile Picture
+	r.Post("/upload", newBims.UploadUserProfile)
+	// File Serving route View requirement
+	r.Get("/files/{userID}/{filename}", newBims.ServeFile)
+
+	// Users route
+	r.Get("/users", newBims.ReadUsers)
+	r.Delete("/users", newBims.DeleteUsers)
+	r.Patch("/users", newBims.UpdateUsers)
+	r.Post("/users", newBims.CreateUsers)
+
+	// New Document Application route
+	r.Post("/new", newBims.New)
+
+	// Residents route
+	r.Get("/residents", newBims.ReadResidents)
+	r.Delete("/residents", newBims.DeleteResidents)
+	r.Patch("/residents", newBims.UpdateResidents)
+
+	// Indigencies route
+	r.Get("/indigencies", newBims.ReadIndigencies)
+	r.Delete("/indigencies", newBims.DeleteIndigencies)
+	r.Patch("/indigencies", newBims.UpdateIndigencies)
+
+	// Clearance route
+	r.Get("/clearance", newBims.ReadClearance)
+	r.Delete("/clearance", newBims.DeleteClearance)
+	r.Patch("/clearance", newBims.UpdateClearance)
+
+	// Referrals route
+	r.Get("/referrals", newBims.ReadReferrals)
+	r.Delete("/referrals", newBims.DeleteReferrals)
+	r.Patch("/referrals", newBims.UpdateReferrals)
+
 	log.Fatal(http.ListenAndServe("0.0.0.0:8085", r))
 }
 

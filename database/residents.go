@@ -47,7 +47,7 @@ func CreateResident(db sqlx.Ext, LastName string, FirstName string, MiddleName s
 		CivilStatus,
 		ContactNumber,
 		GuardianName,
-		GurdianContactNumbers,
+		GurdianContactNumber,
 		Religion,
 		Occupation,
 		IssuingOfficer
@@ -102,7 +102,7 @@ func UpdateResidents(db sqlx.Ext, ID int64, LastName string, FirstName string, M
 		CivilStatus = ?,
 		ContactNumber = ?,
 		GuardianName = ?,
-		GurdianContactNumbers = ?,
+		GurdianContactNumber = ?,
 		Religion = ?,
 		Occupation = ? WHERE ID= ?`,
 		formattedTime,
@@ -174,7 +174,7 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 				CivilStatus,
 				ContactNumber,
 				GuardianName,
-				GurdianContactNumbers,
+				GurdianContactNumber,
 				Religion,
 				Occupation,
 				IssuingOfficer FROM Residents`)
