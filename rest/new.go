@@ -112,7 +112,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.DocuTitle == "Referal Slip" {
+	if req.DocuTitle == "Referral Slip" {
 		err = database.CreateReferrals(b.BIMSdb, residentID, req.HealthCardGGGNumber, req.PhilHealthNumber, req.PhilHealthCategory,
 			req.ReasonForReferral, ValidUntil, req.IssuingOfficer, req.Remarks)
 		if err != nil {

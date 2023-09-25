@@ -8,6 +8,7 @@ import (
 
 type LoginResponse struct {
 	ID          int64  `json:"ID"`
+	UserName    string `json:"Username"`
 	FullName    string `json:"FullName"`
 	ProfileLink string `json:"ProfileLink"`
 	IsAdmin     bool   `json:"IsAdmin"`
@@ -46,6 +47,7 @@ func Login(db sqlx.Ext, username string, password string) (*LoginResponse, error
 
 	return &LoginResponse{
 		ID:          id,
+		UserName:    user,
 		FullName:    fullname,
 		ProfileLink: profilelink,
 		IsAdmin:     isadmin,

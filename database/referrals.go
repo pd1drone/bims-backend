@@ -59,29 +59,25 @@ func CreateReferrals(db sqlx.Ext, ResidentID int64, HCGGGNumber string, PhilHeal
 	return nil
 }
 
-func UpdateReferrals(db sqlx.Ext, ID int64, ResidentID int64, HCGGGNumber string, PhilHealthID string, PhilHealthCategory string,
-	ReasonForReferral string, IssuingOfficer string, Remarks string) error {
+func UpdateReferrals(db sqlx.Ext, ID int64, HCGGGNumber string, PhilHealthID string, PhilHealthCategory string,
+	ReasonForReferral string, Remarks string) error {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
 	formattedTime := currentTime.Format("2006-01-02 03:04 PM")
 
 	_, err := db.Exec(`UPDATE Referrals SET 
-		ResidentID = ?,
 		DateUpdated = ?,
 		HCGGGNumber = ?,
 		PhilHealthID = ?,
 		PhilHealthCategory = ?,
 		ReasonForReferral = ?,
-		IssuingOfficer = ?,
 		Remarks = ? WHERE ID= ?`,
-		ResidentID,
 		formattedTime,
 		HCGGGNumber,
 		PhilHealthID,
 		PhilHealthCategory,
 		ReasonForReferral,
-		IssuingOfficer,
 		Remarks,
 		ID,
 	)
@@ -120,7 +116,6 @@ func ReadReferrals(db sqlx.Ext) ([]*Referrals, error) {
 	var Remarks string
 
 	rows, err := db.Queryx(`SELECT ID,
-				ID,
 				ResidentID,
 				DateCreated,
 				DateUpdated,

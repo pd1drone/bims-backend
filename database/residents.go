@@ -186,7 +186,7 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 
 	for rows.Next() {
 		err = rows.Scan(&ID, &DateCreated, &DateUpdated, &LastName, &FirstName, &MiddleName, &Address, &BirthDate, &BirthPlace,
-			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, IssuingOfficer)
+			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, &IssuingOfficer)
 		if err != nil {
 			return nil, err
 		}

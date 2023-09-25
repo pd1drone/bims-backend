@@ -113,8 +113,8 @@ func (b *BimsConfiguration) UpdateReferrals(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = database.UpdateReferrals(b.BIMSdb, req.ID, req.ResidentID, req.HCGGGNumber, req.PhilHealthID, req.PhilHealthCategory, req.ReasonForReferral,
-		req.IssuingOfficer, req.Remarks)
+	err = database.UpdateReferrals(b.BIMSdb, req.ID, req.HCGGGNumber, req.PhilHealthID,
+		req.PhilHealthCategory, req.ReasonForReferral, req.Remarks)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,

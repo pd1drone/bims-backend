@@ -110,7 +110,7 @@ func (b *BimsConfiguration) UpdateIndigencies(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err = database.UpdateIndigencies(b.BIMSdb, req.ID, req.ResidentID, req.Reason, req.IssuingOfficer, req.Remarks)
+	err = database.UpdateIndigencies(b.BIMSdb, req.ID, req.Reason, req.Remarks)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,

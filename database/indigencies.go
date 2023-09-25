@@ -60,22 +60,18 @@ func DeleteIndigencies(db sqlx.Ext, ID int64) error {
 	return nil
 }
 
-func UpdateIndigencies(db sqlx.Ext, ID int64, ResidentID int64, Reason string, IssuingOfficer string, Remarks string) error {
+func UpdateIndigencies(db sqlx.Ext, ID int64, Reason string, Remarks string) error {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
 	formattedTime := currentTime.Format("2006-01-02 03:04 PM")
 
 	_, err := db.Exec(`UPDATE Indigencies SET 
-		ResidentID = ?,
 		DateUpdated = ?,
 		Reason = ?,
-		IssuingOfficer = ?,
 		Remarks = ? WHERE ID= ?`,
-		ResidentID,
 		formattedTime,
 		Reason,
-		IssuingOfficer,
 		Remarks,
 		ID,
 	)
@@ -100,7 +96,6 @@ func ReadIndigencies(db sqlx.Ext) ([]*Indigencies, error) {
 	var Remarks string
 
 	rows, err := db.Queryx(`SELECT ID,
-				ID,
 				ResidentID,
 				DateCreated,
 				DateUpdated,

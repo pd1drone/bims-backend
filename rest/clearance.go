@@ -113,7 +113,7 @@ func (b *BimsConfiguration) UpdateClearance(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = database.UpdateClearance(b.BIMSdb, req.ID, req.ResidentID, req.IssuingOfficer, req.Remarks, req.ResidentLastName,
+	err = database.UpdateClearance(b.BIMSdb, req.ID, req.Remarks, req.ResidentLastName,
 		req.ResidentFirstName, req.ResidentMiddleName, req.Purpose)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{

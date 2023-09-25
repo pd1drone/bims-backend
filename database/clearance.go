@@ -70,7 +70,7 @@ func DeleteClearance(db sqlx.Ext, ID int64) error {
 	return nil
 }
 
-func UpdateClearance(db sqlx.Ext, ID int64, ResidentID int64, IssuingOfficer string, Remarks string, ResidentLastName string,
+func UpdateClearance(db sqlx.Ext, ID int64, Remarks string, ResidentLastName string,
 	ResidentFirstName string, ResidentMiddleName string, Purpose string) error {
 
 	currentTime := time.Now()
@@ -78,17 +78,13 @@ func UpdateClearance(db sqlx.Ext, ID int64, ResidentID int64, IssuingOfficer str
 	formattedTime := currentTime.Format("2006-01-02 03:04 PM")
 
 	_, err := db.Exec(`UPDATE Clearance SET 
-		ResidentID = ?,
 		DateUpdated = ?,
-		IssuingOfficer = ?,
-		Remarks = ?
+		Remarks = ?,
 		ResidentLastName = ?,
 		ResidentFirstName = ?,
 		ResidentMiddleName = ?,
 		Purpose = ? WHERE ID= ?`,
-		ResidentID,
 		formattedTime,
-		IssuingOfficer,
 		Remarks,
 		ResidentLastName,
 		ResidentFirstName,
@@ -120,7 +116,6 @@ func ReadClearance(db sqlx.Ext) ([]*Clearance, error) {
 	var Purpose string
 
 	rows, err := db.Queryx(`SELECT ID,
-				ID,
 				ResidentID,
 				DateCreated,
 				DateUpdated,

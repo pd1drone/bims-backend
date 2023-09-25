@@ -12,7 +12,7 @@ func ChangePassword(db sqlx.Ext, ID int64, user string, pass string, hashedNewPa
 	var password string
 
 	rows, err := db.Queryx(`SELECT Username, Password FROM Users
-	WHEREUsername=? AND Password=?`,
+	WHERE Username=? AND Password=?`,
 		user, pass)
 
 	if err != nil {

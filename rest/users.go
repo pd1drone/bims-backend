@@ -133,7 +133,7 @@ func (b *BimsConfiguration) UpdateUsers(w http.ResponseWriter, r *http.Request) 
 	}
 
 	err = database.UpdateUser(b.BIMSdb, req.ID, req.FullName, req.FirstName, req.MiddleName, req.LastName,
-		req.PositionID, req.Email, req.Username, req.ProfileLink)
+		req.PositionID, req.Email, req.Username)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,
@@ -185,7 +185,7 @@ func (b *BimsConfiguration) CreateUsers(w http.ResponseWriter, r *http.Request) 
 	md5HashPass := MD5HashPassword(generatedPassword)
 
 	err = database.CreateUser(b.BIMSdb, req.FullName, req.FirstName, req.MiddleName, req.LastName, req.PositionID, req.Email,
-		req.Username, md5HashPass, req.ProfileLink)
+		req.Username, md5HashPass, "")
 	if err != nil {
 		respondJSON(w, 200, &CreateResponse{
 			Success: false,

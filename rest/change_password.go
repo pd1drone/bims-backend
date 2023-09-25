@@ -38,17 +38,22 @@ func (b *BimsConfiguration) ChangePassword(w http.ResponseWriter, r *http.Reques
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
 
 	req := &ChangePasswordRequest{}
+	response := &ChangePasswordResponse{}
 
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		respondJSON(w, 400, nil)
+		fmt.Println(err)
+		response.Successful = false
+		response.Message = fmt.Sprintf(err.Error())
+		respondJSON(w, 400, response)
 		return
 	}
 
-	response := &ChangePasswordResponse{}
+	fmt.Println(req)
 
 	err = database.ChangePassword(b.BIMSdb, req.ID, req.Username, req.Password, req.NewPassword)
 	if err != nil {
+		fmt.Println(err)
 		response.Successful = false
 		response.Message = fmt.Sprintf(err.Error())
 		respondJSON(w, 400, response)

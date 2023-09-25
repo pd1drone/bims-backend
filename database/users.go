@@ -21,6 +21,11 @@ type Users struct {
 func CreateUser(db sqlx.Ext, FullName string, FirstName string, MiddleName string, LastName string, PositionID int64, Email string,
 	Username string, Password string, ProfileLink string) error {
 
+	isadmin := false
+	if PositionID == 1 {
+		isadmin = true
+	}
+
 	_, err := db.Exec(`INSERT INTO Users (
 		FullName,
 		FirstName,
@@ -42,7 +47,7 @@ func CreateUser(db sqlx.Ext, FullName string, FirstName string, MiddleName strin
 		Email,
 		Username,
 		Password,
-		false,
+		isadmin,
 		ProfileLink,
 	)
 
@@ -65,17 +70,16 @@ func DeleteUser(db sqlx.Ext, ID int64) error {
 }
 
 func UpdateUser(db sqlx.Ext, ID int64, FullName string, FirstName string, MiddleName string, LastName string, PositionID int64, Email string,
-	Username string, ProfileLink string) error {
+	Username string) error {
 
-	_, err := db.Exec(`UPDATE Residents SET 
+	_, err := db.Exec(`UPDATE Users SET 
 		FullName = ?,
 		FirstName = ?,
 		MiddleName = ?,
 		LastName = ?,
 		PositionID = ?,
 		Email = ?,
-		Username,
-		ProfileLink = ? WHERE ID= ?`,
+		Username =? WHERE ID= ?`,
 		FullName,
 		FirstName,
 		MiddleName,
@@ -83,7 +87,6 @@ func UpdateUser(db sqlx.Ext, ID int64, FullName string, FirstName string, Middle
 		PositionID,
 		Email,
 		Username,
-		ProfileLink,
 		ID,
 	)
 
