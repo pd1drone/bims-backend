@@ -79,7 +79,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 
 	if req.DocuTitle == "Barangay Indigency" {
 
-		err = database.CreateIndigencies(b.BIMSdb, residentID, req.ReasonForReferral, ValidUntil, req.IssuingOfficer, req.Remarks)
+		documentIndigencyID, err := database.CreateIndigencies(b.BIMSdb, residentID, req.Purpose, ValidUntil, req.IssuingOfficer, req.Remarks)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
 				Success: false,
@@ -87,6 +87,17 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+
+		fullName := req.FirstName + " " + req.MiddleName + " " + req.LastName
+		err = CreateIndigencyPDF(residentID, documentIndigencyID, fullName, req.Address, req.Remarks)
+		if err != nil {
+			respondJSON(w, 200, &NewResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
 		respondJSON(w, 200, &NewResponse{
 			Success: true,
 			Message: "",
@@ -96,7 +107,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 
 	if req.DocuTitle == "Barangay Clearance" {
 
-		err = database.CreateClearance(b.BIMSdb, residentID, ValidUntil, req.IssuingOfficer, req.Remarks, req.LastName, req.FirstName,
+		documentClearanceID, err := database.CreateClearance(b.BIMSdb, residentID, ValidUntil, req.IssuingOfficer, req.Remarks, req.LastName, req.FirstName,
 			req.MiddleName, req.Purpose)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
@@ -105,6 +116,28 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+
+		currentTimeClearance := time.Now()
+		formattedTime := currentTimeClearance.Format("January 2, 2006")
+
+		parsedDate, err := time.Parse("01/02/2006", req.Birthdate)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		}
+
+		Birthday := parsedDate.Format("January 2, 2006")
+		fullName := req.FirstName + " " + req.MiddleName + " " + req.LastName
+
+		err = CreateClearancePDF(residentID, documentClearanceID, formattedTime, Birthday, req.BirthPlace, fullName, req.Address, req.CivilStatus, req.Purpose)
+		if err != nil {
+			respondJSON(w, 200, &NewResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
 		respondJSON(w, 200, &NewResponse{
 			Success: true,
 			Message: "",
@@ -113,7 +146,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if req.DocuTitle == "Referral Slip" {
-		err = database.CreateReferrals(b.BIMSdb, residentID, req.HealthCardGGGNumber, req.PhilHealthNumber, req.PhilHealthCategory,
+		documentReferralsID, err := database.CreateReferrals(b.BIMSdb, residentID, req.HealthCardGGGNumber, req.PhilHealthNumber, req.PhilHealthCategory,
 			req.ReasonForReferral, ValidUntil, req.IssuingOfficer, req.Remarks)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
@@ -122,6 +155,17 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 			})
 			return
 		}
+		err = CreateReferralsPDF(residentID, documentReferralsID, req.LastName, req.MiddleName, req.FirstName, req.Address, req.TelNum,
+			req.ParentName, req.ParentContactNumber, req.ReasonForReferral, req.HealthCardGGGNumber, req.PhilHealthNumber, req.PhilHealthCategory,
+			req.Gender, req.Birthdate, req.CivilStatus, req.Religion, req.Occupation, req.BirthPlace)
+		if err != nil {
+			respondJSON(w, 200, &NewResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
 		respondJSON(w, 200, &NewResponse{
 			Success: true,
 			Message: "",

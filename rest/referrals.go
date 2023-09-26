@@ -123,6 +123,27 @@ func (b *BimsConfiguration) UpdateReferrals(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	err = CreateReferralsPDF(req.ResidentID, req.ID, residentData.LastName, residentData.MiddleName, residentData.FirstName,
+		residentData.Address, residentData.ContactNumber, residentData.GuardianName, residentData.GurdianContactNumbers, req.ReasonForReferral,
+		req.HCGGGNumber, req.PhilHealthID, req.PhilHealthCategory, residentData.Gender, residentData.BirthDate, residentData.CivilStatus, residentData.Religion,
+		residentData.Occupation, residentData.BirthPlace)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	respondJSON(w, 200, &UpdateResponse{
 		Success: true,
 		Message: "",

@@ -212,3 +212,75 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 	}
 	return residentsArray, nil
 }
+
+func ReadResidentData(db sqlx.Ext, residentID int64) (*Residents, error) {
+
+	var ID int64
+	var DateCreated string
+	var DateUpdated string
+	var LastName string
+	var FirstName string
+	var MiddleName string
+	var Address string
+	var BirthDate string
+	var BirthPlace string
+	var Gender string
+	var CivilStatus string
+	var ContactNumber string
+	var GuardianName string
+	var GurdianContactNumbers string
+	var Religion string
+	var Occupation string
+	var IssuingOfficer string
+
+	rows, err := db.Queryx(`SELECT ID,
+				DateCreated,
+				DateUpdated,
+				LastName,
+				FirstName,
+				MiddleName,
+				Address,
+				BirthDate,
+				BirthPlace,
+				Gender,
+				CivilStatus,
+				ContactNumber,
+				GuardianName,
+				GurdianContactNumber,
+				Religion,
+				Occupation,
+				IssuingOfficer FROM Residents WHERE ID = ?`, residentID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&ID, &DateCreated, &DateUpdated, &LastName, &FirstName, &MiddleName, &Address, &BirthDate, &BirthPlace,
+			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, &IssuingOfficer)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &Residents{
+		ID:                    ID,
+		DateCreated:           DateCreated,
+		DateUpdated:           DateUpdated,
+		LastName:              LastName,
+		FirstName:             FirstName,
+		MiddleName:            MiddleName,
+		Address:               Address,
+		BirthDate:             BirthDate,
+		BirthPlace:            BirthPlace,
+		Gender:                Gender,
+		CivilStatus:           CivilStatus,
+		ContactNumber:         ContactNumber,
+		GuardianName:          GuardianName,
+		GurdianContactNumbers: GurdianContactNumbers,
+		Religion:              Religion,
+		Occupation:            Occupation,
+		IssuingOfficer:        IssuingOfficer,
+	}, nil
+
+}

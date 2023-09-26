@@ -21,13 +21,13 @@ type Clearance struct {
 }
 
 func CreateClearance(db sqlx.Ext, ResidentID int64, ValidUntil string, IssuingOfficer string, Remarks string, ResidentLastName string,
-	ResidentFirstName string, ResidentMiddleName string, Purpose string) error {
+	ResidentFirstName string, ResidentMiddleName string, Purpose string) (int64, error) {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
 	formattedTime := currentTime.Format("2006-01-02 03:04 PM")
 
-	_, err := db.Exec(`INSERT INTO Clearance (
+	query, err := db.Exec(`INSERT INTO Clearance (
 		ResidentID,
 		DateCreated,
 		DateUpdated,
@@ -53,10 +53,14 @@ func CreateClearance(db sqlx.Ext, ResidentID int64, ValidUntil string, IssuingOf
 	)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	documentID, err := query.LastInsertId()
+	if err != nil {
+		return 0, err
+	}
+	return documentID, nil
 }
 
 func DeleteClearance(db sqlx.Ext, ID int64) error {

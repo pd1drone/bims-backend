@@ -105,6 +105,17 @@ func Routes() {
 	// Get Positions route
 	r.Get("/positions", newBims.ReadPositions)
 
+	// GET Clearance PDF
+	r.Get("/clearances/{residentID}/{documentID}/{filename}", newBims.ServeClearancePDF)
+	// GET Indigencies PDF
+	r.Get("/indigencies/{residentID}/{documentID}/{filename}", newBims.ServeIndigenciesPDF)
+	// GET Referrals PDF
+	r.Get("/referrals/{residentID}/{documentID}/{filename}", newBims.ServeReferralsPDF)
+
+	r.Get("/graph_data", newBims.ReadMonthlyTotalGraph)
+
+	r.Get("/total_monthly_data", newBims.GetTotalNumberOfCreatedDocumentsPerMonth)
+
 	log.Fatal(http.ListenAndServe("0.0.0.0:8085", r))
 }
 

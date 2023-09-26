@@ -21,13 +21,13 @@ type Referrals struct {
 }
 
 func CreateReferrals(db sqlx.Ext, ResidentID int64, HCGGGNumber string, PhilHealthID string, PhilHealthCategory string,
-	ReasonForReferral string, ValidUntil string, IssuingOfficer string, Remarks string) error {
+	ReasonForReferral string, ValidUntil string, IssuingOfficer string, Remarks string) (int64, error) {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
 	formattedTime := currentTime.Format("2006-01-02 03:04 PM")
 
-	_, err := db.Exec(`INSERT INTO Referrals (
+	query, err := db.Exec(`INSERT INTO Referrals (
 		ResidentID,
 		DateCreated,
 		DateUpdated,
@@ -53,10 +53,14 @@ func CreateReferrals(db sqlx.Ext, ResidentID int64, HCGGGNumber string, PhilHeal
 	)
 
 	if err != nil {
-		return err
+		return 0, err
+	}
+	documentID, err := query.LastInsertId()
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	return documentID, nil
 }
 
 func UpdateReferrals(db sqlx.Ext, ID int64, HCGGGNumber string, PhilHealthID string, PhilHealthCategory string,

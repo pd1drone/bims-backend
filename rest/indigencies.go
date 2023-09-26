@@ -119,6 +119,24 @@ func (b *BimsConfiguration) UpdateIndigencies(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	fullName := residentData.FirstName + " " + residentData.MiddleName + " " + residentData.LastName
+	err = CreateIndigencyPDF(req.ResidentID, req.ID, fullName, residentData.Address, req.Reason)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
 	respondJSON(w, 200, &UpdateResponse{
 		Success: true,
 		Message: "",

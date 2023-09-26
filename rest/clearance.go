@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 type Clearance struct {
@@ -115,6 +116,39 @@ func (b *BimsConfiguration) UpdateClearance(w http.ResponseWriter, r *http.Reque
 
 	err = database.UpdateClearance(b.BIMSdb, req.ID, req.Remarks, req.ResidentLastName,
 		req.ResidentFirstName, req.ResidentMiddleName, req.Purpose)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	currentTimeClearance := time.Now()
+	formattedTime := currentTimeClearance.Format("January 2, 2006")
+
+	parsedDate, err := time.Parse("01/02/2006", residentData.BirthDate)
+	if err != nil {
+		respondJSON(w, 200, &UpdateResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
+	Birthday := parsedDate.Format("January 2, 2006")
+	fullName := req.ResidentFirstName + " " + req.ResidentMiddleName + " " + req.ResidentLastName
+
+	err = CreateClearancePDF(req.ResidentID, req.ID, formattedTime, Birthday, residentData.BirthPlace, fullName, residentData.Address, residentData.CivilStatus, req.Purpose)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,

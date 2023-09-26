@@ -17,13 +17,13 @@ type Indigencies struct {
 	Remarks        string `json:"Remarks"`
 }
 
-func CreateIndigencies(db sqlx.Ext, ResidentID int64, Reason string, ValidUntil string, IssuingOfficer string, Remarks string) error {
+func CreateIndigencies(db sqlx.Ext, ResidentID int64, Reason string, ValidUntil string, IssuingOfficer string, Remarks string) (int64, error) {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
 	formattedTime := currentTime.Format("2006-01-02 03:04 PM")
 
-	_, err := db.Exec(`INSERT INTO Indigencies (
+	query, err := db.Exec(`INSERT INTO Indigencies (
 		ResidentID,
 		DateCreated,
 		DateUpdated,
@@ -43,10 +43,14 @@ func CreateIndigencies(db sqlx.Ext, ResidentID int64, Reason string, ValidUntil 
 	)
 
 	if err != nil {
-		return err
+		return 0, err
+	}
+	documentID, err := query.LastInsertId()
+	if err != nil {
+		return 0, err
 	}
 
-	return nil
+	return documentID, nil
 }
 
 func DeleteIndigencies(db sqlx.Ext, ID int64) error {
