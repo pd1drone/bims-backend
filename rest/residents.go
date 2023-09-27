@@ -30,6 +30,12 @@ type Residents struct {
 	IssuingOfficer        string `json:"IssuingOfficer"`
 }
 
+type DeleteRequestResident struct {
+	ID           int64  `json:"ID"`
+	DocumentID   int64  `json:"DocumentID"`
+	DocumentType string `json:"DocumentType"`
+}
+
 func (b *BimsConfiguration) ReadResidents(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Access-Control-Allow-Origin", "*")
@@ -64,7 +70,7 @@ func (b *BimsConfiguration) DeleteResidents(w http.ResponseWriter, r *http.Reque
 	// Restore request body after reading
 	r.Body = io.NopCloser(bytes.NewBuffer(body))
 
-	req := &DeleteRequest{}
+	req := &DeleteRequestResident{}
 
 	err = json.Unmarshal(body, &req)
 	if err != nil {
@@ -82,6 +88,35 @@ func (b *BimsConfiguration) DeleteResidents(w http.ResponseWriter, r *http.Reque
 			Message: err.Error(),
 		})
 		return
+	}
+
+	if req.DocumentType == "Barangay Indigency" {
+		err = database.DeleteIndigencies(b.BIMSdb, req.DocumentID)
+		if err != nil {
+			respondJSON(w, 200, &DeleteResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+	} else if req.DocumentType == "Barangay Clearance" {
+		err = database.DeleteClearance(b.BIMSdb, req.DocumentID)
+		if err != nil {
+			respondJSON(w, 200, &DeleteResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+	} else if req.DocumentType == "Referral Slip" {
+		err = database.DeleteReferrals(b.BIMSdb, req.DocumentID)
+		if err != nil {
+			respondJSON(w, 200, &DeleteResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
 	}
 
 	respondJSON(w, 200, &DeleteResponse{

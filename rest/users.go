@@ -11,7 +11,8 @@ import (
 )
 
 type DeleteRequest struct {
-	ID int64 `json:"ID"`
+	ID         int64 `json:"ID"`
+	ResidentID int64 `json:"ResidentID"`
 }
 
 type DeleteResponse struct {

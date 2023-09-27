@@ -24,11 +24,13 @@ type Residents struct {
 	Religion              string `json:"Religion"`
 	Occupation            string `json:"Occupation"`
 	IssuingOfficer        string `json:"IssuingOfficer"`
+	DocumentType          string `json:"DocumentType"`
+	DocumentID            int64  `json:"DocumentID"`
 }
 
 func CreateResident(db sqlx.Ext, LastName string, FirstName string, MiddleName string, Address string, BirthDate string,
 	BirthPlace string, Gender string, CivilStatus string, ContactNumber string, GuardianName string, GurdianContactNumbers string,
-	Religion string, Occupation string, IssuingOfficer string) (int64, error) {
+	Religion string, Occupation string, IssuingOfficer string, DocumentType string) (int64, error) {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
@@ -50,9 +52,10 @@ func CreateResident(db sqlx.Ext, LastName string, FirstName string, MiddleName s
 		GurdianContactNumber,
 		Religion,
 		Occupation,
-		IssuingOfficer
+		IssuingOfficer,
+		DocumentType
 	)
-	Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+	Values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		formattedTime,
 		formattedTime,
 		LastName,
@@ -69,6 +72,7 @@ func CreateResident(db sqlx.Ext, LastName string, FirstName string, MiddleName s
 		Religion,
 		Occupation,
 		IssuingOfficer,
+		DocumentType,
 	)
 
 	if err != nil {
@@ -160,6 +164,8 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 	var Religion string
 	var Occupation string
 	var IssuingOfficer string
+	var DocumentType string
+	var DocumentID int64
 
 	rows, err := db.Queryx(`SELECT ID,
 				DateCreated,
@@ -177,7 +183,9 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 				GurdianContactNumber,
 				Religion,
 				Occupation,
-				IssuingOfficer FROM Residents`)
+				IssuingOfficer,
+				DocumentType,
+				DocumentID FROM Residents`)
 
 	if err != nil {
 		return nil, err
@@ -186,7 +194,8 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 
 	for rows.Next() {
 		err = rows.Scan(&ID, &DateCreated, &DateUpdated, &LastName, &FirstName, &MiddleName, &Address, &BirthDate, &BirthPlace,
-			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, &IssuingOfficer)
+			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, &IssuingOfficer,
+			&DocumentType, &DocumentID)
 		if err != nil {
 			return nil, err
 		}
@@ -208,6 +217,8 @@ func ReadResidents(db sqlx.Ext) ([]*Residents, error) {
 			Religion:              Religion,
 			Occupation:            Occupation,
 			IssuingOfficer:        IssuingOfficer,
+			DocumentType:          DocumentType,
+			DocumentID:            DocumentID,
 		})
 	}
 	return residentsArray, nil
@@ -232,6 +243,8 @@ func ReadResidentData(db sqlx.Ext, residentID int64) (*Residents, error) {
 	var Religion string
 	var Occupation string
 	var IssuingOfficer string
+	var DocumentType string
+	var DocumentID int64
 
 	rows, err := db.Queryx(`SELECT ID,
 				DateCreated,
@@ -249,7 +262,9 @@ func ReadResidentData(db sqlx.Ext, residentID int64) (*Residents, error) {
 				GurdianContactNumber,
 				Religion,
 				Occupation,
-				IssuingOfficer FROM Residents WHERE ID = ?`, residentID)
+				IssuingOfficer,
+				DocumentType,
+				DocumentID FROM Residents WHERE ID = ?`, residentID)
 
 	if err != nil {
 		return nil, err
@@ -258,7 +273,8 @@ func ReadResidentData(db sqlx.Ext, residentID int64) (*Residents, error) {
 
 	for rows.Next() {
 		err = rows.Scan(&ID, &DateCreated, &DateUpdated, &LastName, &FirstName, &MiddleName, &Address, &BirthDate, &BirthPlace,
-			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, &IssuingOfficer)
+			&Gender, &CivilStatus, &ContactNumber, &GuardianName, &GurdianContactNumbers, &Religion, &Occupation, &IssuingOfficer,
+			&DocumentType, &DocumentID)
 		if err != nil {
 			return nil, err
 		}
@@ -281,6 +297,23 @@ func ReadResidentData(db sqlx.Ext, residentID int64) (*Residents, error) {
 		Religion:              Religion,
 		Occupation:            Occupation,
 		IssuingOfficer:        IssuingOfficer,
+		DocumentType:          DocumentType,
+		DocumentID:            DocumentID,
 	}, nil
 
+}
+
+func UpdateDocumentID(db sqlx.Ext, DocumentID int64, ResidentID int64) error {
+
+	_, err := db.Exec(`UPDATE Residents SET 
+		DocumentID = ? WHERE ID= ?`,
+		DocumentID,
+		ResidentID,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

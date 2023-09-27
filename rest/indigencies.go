@@ -75,6 +75,15 @@ func (b *BimsConfiguration) DeleteIndigencies(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	err = database.DeleteResidents(b.BIMSdb, req.ResidentID)
+	if err != nil {
+		respondJSON(w, 200, &DeleteResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	respondJSON(w, 200, &DeleteResponse{
 		Success: true,
 		Message: "",

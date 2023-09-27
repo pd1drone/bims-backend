@@ -39,7 +39,9 @@ CREATE TABLE `Residents` (
   `GurdianContactNumber` varchar(255),
   `Religion` varchar(255),
   `Occupation` varchar(255),
-  `IssuingOfficer` varchar(255)
+  `IssuingOfficer` varchar(255),
+  `DocumentType` varchar(255),
+  `DocumentID` int
 );
 
 CREATE TABLE `Clearance` (

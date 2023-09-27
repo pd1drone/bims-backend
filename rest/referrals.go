@@ -78,6 +78,15 @@ func (b *BimsConfiguration) DeleteReferrals(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
+	err = database.DeleteResidents(b.BIMSdb, req.ResidentID)
+	if err != nil {
+		respondJSON(w, 200, &DeleteResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
+
 	respondJSON(w, 200, &DeleteResponse{
 		Success: true,
 		Message: "",

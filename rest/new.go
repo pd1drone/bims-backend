@@ -71,8 +71,18 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	residentID, err := database.CreateResident(b.BIMSdb, req.LastName, req.FirstName, req.MiddleName, req.Address, req.Birthdate, req.BirthPlace,
-		req.Gender, req.CivilStatus, req.TelNum, req.ParentName, req.ParentContactNumber, req.Religion, req.Occupation, req.IssuingOfficer)
+		req.Gender, req.CivilStatus, req.TelNum, req.ParentName, req.ParentContactNumber, req.Religion, req.Occupation, req.IssuingOfficer, req.DocuTitle)
+	if err != nil {
+		fmt.Println(err)
+		respondJSON(w, 200, &NewResponse{
+			Success: false,
+			Message: err.Error(),
+		})
+		return
+	}
 
+	fmt.Print("RESIDENT ID: ")
+	fmt.Println(residentID)
 	currentTime := time.Now()
 	newTime := currentTime.Add(720 * time.Hour)
 	ValidUntil := newTime.Format("2006-01-02 03:04 PM")
@@ -90,6 +100,15 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 
 		fullName := req.FirstName + " " + req.MiddleName + " " + req.LastName
 		err = CreateIndigencyPDF(residentID, documentIndigencyID, fullName, req.Address, req.Remarks)
+		if err != nil {
+			respondJSON(w, 200, &NewResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		err = database.UpdateDocumentID(b.BIMSdb, documentIndigencyID, residentID)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
 				Success: false,
@@ -138,6 +157,15 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		err = database.UpdateDocumentID(b.BIMSdb, documentClearanceID, residentID)
+		if err != nil {
+			respondJSON(w, 200, &NewResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
 		respondJSON(w, 200, &NewResponse{
 			Success: true,
 			Message: "",
@@ -158,6 +186,15 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 		err = CreateReferralsPDF(residentID, documentReferralsID, req.LastName, req.MiddleName, req.FirstName, req.Address, req.TelNum,
 			req.ParentName, req.ParentContactNumber, req.ReasonForReferral, req.HealthCardGGGNumber, req.PhilHealthNumber, req.PhilHealthCategory,
 			req.Gender, req.Birthdate, req.CivilStatus, req.Religion, req.Occupation, req.BirthPlace)
+		if err != nil {
+			respondJSON(w, 200, &NewResponse{
+				Success: false,
+				Message: err.Error(),
+			})
+			return
+		}
+
+		err = database.UpdateDocumentID(b.BIMSdb, documentReferralsID, residentID)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
 				Success: false,
