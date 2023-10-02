@@ -114,8 +114,16 @@ func (b *BimsConfiguration) MonthlyIndigencies() ([]string, []int, error) {
 	var Labels []string
 	var countData []int
 
-	// Calculate the date range from "2023-09-01" to today
-	startDate, _ := time.Parse("2006-01-02", "2023-09-01")
+	// Calculate the date range from "2023-09-01" to today    // Get the current date
+	current := time.Now()
+
+	// Extract the month from the current date
+	currentMonth := current.Month()
+
+	// Create a new date for the same month with day 1
+	startDate := time.Date(current.Year(), currentMonth, 1, 0, 0, 0, 0, current.Location())
+
+	//startDate, _ := time.Parse("2006-01-02", "2023-09-01")
 	endDate := time.Now()
 
 	// Loop through the date range
@@ -154,7 +162,16 @@ func (b *BimsConfiguration) MonthlyClearance() ([]string, []int, error) {
 	var countData []int
 
 	// Calculate the date range from "2023-09-01" to today
-	startDate, _ := time.Parse("2006-01-02", "2023-09-01")
+	// Calculate the date range from "2023-09-01" to today    // Get the current date
+	current := time.Now()
+
+	// Extract the month from the current date
+	currentMonth := current.Month()
+
+	// Create a new date for the same month with day 1
+	startDate := time.Date(current.Year(), currentMonth, 1, 0, 0, 0, 0, current.Location())
+
+	//startDate, _ := time.Parse("2006-01-02", "2023-09-01")
 	endDate := time.Now()
 
 	// Loop through the date range
@@ -192,8 +209,16 @@ func (b *BimsConfiguration) MonthlyReferrals() ([]string, []int, error) {
 	var Labels []string
 	var countData []int
 
-	// Calculate the date range from "2023-09-01" to today
-	startDate, _ := time.Parse("2006-01-02", "2023-09-01")
+	// Calculate the date range from "2023-09-01" to today    // Get the current date
+	current := time.Now()
+
+	// Extract the month from the current date
+	currentMonth := current.Month()
+
+	// Create a new date for the same month with day 1
+	startDate := time.Date(current.Year(), currentMonth, 1, 0, 0, 0, 0, current.Location())
+
+	//startDate, _ := time.Parse("2006-01-02", "2023-09-01")
 	endDate := time.Now()
 
 	// Loop through the date range
