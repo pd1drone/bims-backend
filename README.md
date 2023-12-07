@@ -58,9 +58,9 @@ then next you need to restart ssh
 ```
 systemctl restart ssh
 ```
-18. Now Open Putty and enter the ip address we got from the command ```ip a``` (192.168.254.176 in our case)
+18. Now Open Putty and enter the ip address we got from the command ```ip a``` (192.168.254.176 in our case)   
 ![VirtualBox](images/puttylogin.PNG)
-19. click accept
+19. click accept   
 ![VirtualBox](images/acceptssh.PNG)
 20. Then Login as root then enter the root password (same password as the user we created)
 ![VirtualBox](images/loginasrootenterpassword.PNG)
