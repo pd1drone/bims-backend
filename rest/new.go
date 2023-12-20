@@ -24,8 +24,8 @@ type NewRequest struct {
 	BirthPlace          string `json:"birthPlace"`
 	Gender              string `json:"gender"`
 	ParentName          string `json:"parentName"`
-	Religion            string `json:"religion"`
-	Occupation          string `json:"occupation"`
+	CedulaNo            string `json:"cedulaNo"`
+	PrecintNo           string `json:"precintNo"`
 	CivilStatus         string `json:"civilStatus"`
 	ParentContactNumber string `json:"parentContactNumber"`
 	Purpose             string `json:"purpose"`
@@ -33,6 +33,7 @@ type NewRequest struct {
 	Remarks             string `json:"remarks"`
 	Birthdate           string `json:"birthDate"`
 	IssuingOfficer      string `json:"issuingOfficer"`
+	ValidUntil          string `json:"validUntil"`
 }
 
 type NewResponse struct {
@@ -71,7 +72,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 	}
 
 	residentID, err := database.CreateResident(b.BIMSdb, req.LastName, req.FirstName, req.MiddleName, req.Address, req.Birthdate, req.BirthPlace,
-		req.Gender, req.CivilStatus, req.TelNum, req.ParentName, req.ParentContactNumber, req.Religion, req.Occupation, req.IssuingOfficer, req.DocuTitle)
+		req.Gender, req.CivilStatus, req.TelNum, req.ParentName, req.ParentContactNumber, req.IssuingOfficer, req.DocuTitle)
 	if err != nil {
 		fmt.Println(err)
 		respondJSON(w, 200, &NewResponse{
@@ -127,7 +128,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 	if req.DocuTitle == "Barangay Clearance" {
 
 		documentClearanceID, err := database.CreateClearance(b.BIMSdb, residentID, ValidUntil, req.IssuingOfficer, req.Remarks, req.LastName, req.FirstName,
-			req.MiddleName, req.Purpose)
+			req.MiddleName, req.Purpose, req.CedulaNo, req.PrecintNo)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
 				Success: false,
@@ -148,7 +149,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 		Birthday := parsedDate.Format("January 2, 2006")
 		fullName := req.FirstName + " " + req.MiddleName + " " + req.LastName
 
-		err = CreateClearancePDF(residentID, documentClearanceID, formattedTime, Birthday, req.BirthPlace, fullName, req.Address, req.CivilStatus, req.Purpose)
+		err = CreateClearancePDF(residentID, documentClearanceID, formattedTime, Birthday, req.BirthPlace, fullName, req.Address, req.CivilStatus, req.Purpose, req.CedulaNo, req.PrecintNo, req.ValidUntil)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
 				Success: false,
@@ -185,7 +186,7 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 		}
 		err = CreateReferralsPDF(residentID, documentReferralsID, req.LastName, req.MiddleName, req.FirstName, req.Address, req.TelNum,
 			req.ParentName, req.ParentContactNumber, req.ReasonForReferral, req.HealthCardGGGNumber, req.PhilHealthNumber, req.PhilHealthCategory,
-			req.Gender, req.Birthdate, req.CivilStatus, req.Religion, req.Occupation, req.BirthPlace)
+			req.Gender, req.Birthdate, req.CivilStatus, req.BirthPlace)
 		if err != nil {
 			respondJSON(w, 200, &NewResponse{
 				Success: false,

@@ -7,14 +7,39 @@ import (
 )
 
 type Indigencies struct {
-	ID             int64  `json:"ID"`
-	ResidentID     int64  `json:"ResidentID"`
-	DateCreated    string `json:"DateCreated"`
-	DateUpdated    string `json:"DateUpdated"`
-	Reason         string `json:"Reason"`
-	ValidUntil     string `json:"ValidUntil"`
-	IssuingOfficer string `json:"IssuingOfficer"`
-	Remarks        string `json:"Remarks"`
+	ID             int64      `json:"ID"`
+	ResidentID     int64      `json:"ResidentID"`
+	DateCreated    string     `json:"DateCreated"`
+	DateUpdated    string     `json:"DateUpdated"`
+	Reason         string     `json:"Reason"`
+	ValidUntil     string     `json:"ValidUntil"`
+	IssuingOfficer string     `json:"IssuingOfficer"`
+	Remarks        string     `json:"Remarks"`
+	DocumentStatus string     `json:"DocumentStatus"`
+	Resident       *Residents `json:"ResidentData"`
+}
+type IndigenciesXL struct {
+	ID                    int64  `json:"ID"`
+	ResidentID            int64  `json:"ResidentID"`
+	DateCreated           string `json:"DateCreated"`
+	DateUpdated           string `json:"DateUpdated"`
+	Reason                string `json:"Reason"`
+	ValidUntil            string `json:"ValidUntil"`
+	IssuingOfficer        string `json:"IssuingOfficer"`
+	Remarks               string `json:"Remarks"`
+	DocumentStatus        string `json:"DocumentStatus"`
+	ResidentDateCreated   string `json:"ResidentDateCreated"`
+	ResidentDateUpdated   string `json:"ResidentDateUpdated"`
+	Address               string `json:"Address"`
+	BirthDate             string `json:"BirthDate"`
+	BirthPlace            string `json:"BirthPlace"`
+	Gender                string `json:"Gender"`
+	CivilStatus           string `json:"CivilStatus"`
+	ContactNumber         string `json:"ContactNumber"`
+	GuardianName          string `json:"GuardianName"`
+	GurdianContactNumbers string `json:"GurdianContactNumbers"`
+	DocumentType          string `json:"DocumentType"`
+	DocumentID            int64  `json:"DocumentID"`
 }
 
 func CreateIndigencies(db sqlx.Ext, ResidentID int64, Reason string, ValidUntil string, IssuingOfficer string, Remarks string) (int64, error) {
@@ -30,9 +55,10 @@ func CreateIndigencies(db sqlx.Ext, ResidentID int64, Reason string, ValidUntil 
 		Reason,
 		ValidUntil,
 		IssuingOfficer,
-		Remarks
+		Remarks,
+		DocumentStatus
 	)
-	Values(?,?,?,?,?,?,?)`,
+	Values(?,?,?,?,?,?,?,?)`,
 		ResidentID,
 		formattedTime,
 		formattedTime,
@@ -40,6 +66,7 @@ func CreateIndigencies(db sqlx.Ext, ResidentID int64, Reason string, ValidUntil 
 		ValidUntil,
 		IssuingOfficer,
 		Remarks,
+		"For Printing",
 	)
 
 	if err != nil {
@@ -64,7 +91,7 @@ func DeleteIndigencies(db sqlx.Ext, ID int64) error {
 	return nil
 }
 
-func UpdateIndigencies(db sqlx.Ext, ID int64, Reason string, Remarks string) error {
+func UpdateIndigencies(db sqlx.Ext, ID int64, Reason string, Remarks string, DocumentStatus string) error {
 
 	currentTime := time.Now()
 	// Format the time as "YYYY-MM-DD 03:04 PM"
@@ -73,10 +100,12 @@ func UpdateIndigencies(db sqlx.Ext, ID int64, Reason string, Remarks string) err
 	_, err := db.Exec(`UPDATE Indigencies SET 
 		DateUpdated = ?,
 		Reason = ?,
-		Remarks = ? WHERE ID= ?`,
+		Remarks = ?,
+		DocumentStatus = ? WHERE ID= ?`,
 		formattedTime,
 		Reason,
 		Remarks,
+		DocumentStatus,
 		ID,
 	)
 
@@ -98,6 +127,7 @@ func ReadIndigencies(db sqlx.Ext) ([]*Indigencies, error) {
 	var ValidUntil string
 	var IssuingOfficer string
 	var Remarks string
+	var DocumentStatus string
 
 	rows, err := db.Queryx(`SELECT ID,
 				ResidentID,
@@ -106,7 +136,8 @@ func ReadIndigencies(db sqlx.Ext) ([]*Indigencies, error) {
 				Reason,
 				ValidUntil,
 				IssuingOfficer,
-				Remarks FROM Indigencies`)
+				Remarks,
+				DocumentStatus FROM Indigencies`)
 
 	if err != nil {
 		return nil, err
@@ -114,7 +145,11 @@ func ReadIndigencies(db sqlx.Ext) ([]*Indigencies, error) {
 	defer rows.Close()
 
 	for rows.Next() {
-		err = rows.Scan(&ID, &ResidentID, &DateCreated, &DateUpdated, &Reason, &ValidUntil, &IssuingOfficer, &Remarks)
+		err = rows.Scan(&ID, &ResidentID, &DateCreated, &DateUpdated, &Reason, &ValidUntil, &IssuingOfficer, &Remarks, &DocumentStatus)
+		if err != nil {
+			return nil, err
+		}
+		residentData, err := ReadResidentData(db, ResidentID)
 		if err != nil {
 			return nil, err
 		}
@@ -127,6 +162,118 @@ func ReadIndigencies(db sqlx.Ext) ([]*Indigencies, error) {
 			ValidUntil:     ValidUntil,
 			IssuingOfficer: IssuingOfficer,
 			Remarks:        Remarks,
+			DocumentStatus: DocumentStatus,
+			Resident:       residentData,
+		})
+	}
+	return indigenciesArray, nil
+}
+
+func ReadIndigencyData(db sqlx.Ext, DocumentID int64) (*Indigencies, error) {
+
+	var ID int64
+	var ResidentID int64
+	var DateCreated string
+	var DateUpdated string
+	var Reason string
+	var ValidUntil string
+	var IssuingOfficer string
+	var Remarks string
+	var DocumentStatus string
+
+	rows, err := db.Queryx(`SELECT ID,
+	ResidentID,
+	DateCreated,
+	DateUpdated,
+	Reason,
+	ValidUntil,
+	IssuingOfficer,
+	Remarks,
+	DocumentStatus FROM Indigencies WHERE ID = ?`, DocumentID)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&ID, &ResidentID, &DateCreated, &DateUpdated, &Reason, &ValidUntil, &IssuingOfficer, &Remarks, &DocumentStatus)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return &Indigencies{
+		ID:             ID,
+		ResidentID:     ResidentID,
+		DateCreated:    DateCreated,
+		DateUpdated:    DateUpdated,
+		Reason:         Reason,
+		ValidUntil:     ValidUntil,
+		IssuingOfficer: IssuingOfficer,
+		Remarks:        Remarks,
+		DocumentStatus: DocumentStatus,
+	}, nil
+}
+
+func ReadIndigenciesXL(db sqlx.Ext) ([]*IndigenciesXL, error) {
+
+	indigenciesArray := make([]*IndigenciesXL, 0)
+	var ID int64
+	var ResidentID int64
+	var DateCreated string
+	var DateUpdated string
+	var Reason string
+	var ValidUntil string
+	var IssuingOfficer string
+	var Remarks string
+	var DocumentStatus string
+
+	rows, err := db.Queryx(`SELECT ID,
+				ResidentID,
+				DateCreated,
+				DateUpdated,
+				Reason,
+				ValidUntil,
+				IssuingOfficer,
+				Remarks,
+				DocumentStatus FROM Indigencies`)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		err = rows.Scan(&ID, &ResidentID, &DateCreated, &DateUpdated, &Reason, &ValidUntil, &IssuingOfficer, &Remarks, &DocumentStatus)
+		if err != nil {
+			return nil, err
+		}
+		residentData, err := ReadResidentData(db, ResidentID)
+		if err != nil {
+			return nil, err
+		}
+		indigenciesArray = append(indigenciesArray, &IndigenciesXL{
+			ID:                    ID,
+			ResidentID:            ResidentID,
+			DateCreated:           DateCreated,
+			DateUpdated:           DateUpdated,
+			Reason:                Reason,
+			ValidUntil:            ValidUntil,
+			IssuingOfficer:        IssuingOfficer,
+			Remarks:               Remarks,
+			DocumentStatus:        DocumentStatus,
+			ResidentDateCreated:   residentData.DateCreated,
+			ResidentDateUpdated:   residentData.DateUpdated,
+			Address:               residentData.Address,
+			BirthDate:             residentData.BirthDate,
+			BirthPlace:            residentData.BirthPlace,
+			Gender:                residentData.Gender,
+			CivilStatus:           residentData.CivilStatus,
+			ContactNumber:         residentData.ContactNumber,
+			GuardianName:          residentData.GuardianName,
+			GurdianContactNumbers: residentData.GurdianContactNumbers,
+			DocumentType:          residentData.DocumentType,
+			DocumentID:            residentData.DocumentID,
 		})
 	}
 	return indigenciesArray, nil

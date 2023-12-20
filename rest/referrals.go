@@ -11,17 +11,19 @@ import (
 )
 
 type Referrals struct {
-	ID                 int64  `json:"ID"`
-	ResidentID         int64  `json:"ResidentID"`
-	DateCreated        string `json:"DateCreated"`
-	DateUpdated        string `json:"DateUpdated"`
-	HCGGGNumber        string `json:"HCGGGNumber"`
-	PhilHealthID       string `json:"PhilHealthID"`
-	PhilHealthCategory string `json:"PhilHealthCategory"`
-	ReasonForReferral  string `json:"ReasonForReferral"`
-	ValidUntil         string `json:"ValidUntil"`
-	IssuingOfficer     string `json:"IssuingOfficer"`
-	Remarks            string `json:"Remarks"`
+	ID                 int64     `json:"ID"`
+	ResidentID         int64     `json:"ResidentID"`
+	DateCreated        string    `json:"DateCreated"`
+	DateUpdated        string    `json:"DateUpdated"`
+	HCGGGNumber        string    `json:"HCGGGNumber"`
+	PhilHealthID       string    `json:"PhilHealthID"`
+	PhilHealthCategory string    `json:"PhilHealthCategory"`
+	ReasonForReferral  string    `json:"ReasonForReferral"`
+	ValidUntil         string    `json:"ValidUntil"`
+	IssuingOfficer     string    `json:"IssuingOfficer"`
+	Remarks            string    `json:"Remarks"`
+	DocumentStatus     string    `json:"DocumentStatus"`
+	ResidentData       Residents `json:"ResidentData"`
 }
 
 func (b *BimsConfiguration) ReadReferrals(w http.ResponseWriter, r *http.Request) {
@@ -31,6 +33,21 @@ func (b *BimsConfiguration) ReadReferrals(w http.ResponseWriter, r *http.Request
 	w.Header().Add("Access-Control-Allow-Headers", "*")
 
 	ReferralsData, err := database.ReadReferrals(b.BIMSdb)
+	if err != nil {
+		log.Print(err)
+		respondJSON(w, 400, nil)
+		return
+	}
+
+	respondJSON(w, 200, ReferralsData)
+}
+func (b *BimsConfiguration) ReadReferralsXL(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "*")
+
+	ReferralsData, err := database.ReadReferralsXL(b.BIMSdb)
 	if err != nil {
 		log.Print(err)
 		respondJSON(w, 400, nil)
@@ -123,7 +140,7 @@ func (b *BimsConfiguration) UpdateReferrals(w http.ResponseWriter, r *http.Reque
 	}
 
 	err = database.UpdateReferrals(b.BIMSdb, req.ID, req.HCGGGNumber, req.PhilHealthID,
-		req.PhilHealthCategory, req.ReasonForReferral, req.Remarks)
+		req.PhilHealthCategory, req.ReasonForReferral, req.Remarks, req.DocumentStatus)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,
@@ -132,7 +149,18 @@ func (b *BimsConfiguration) UpdateReferrals(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	// residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	// if err != nil {
+	// 	respondJSON(w, 200, &UpdateResponse{
+	// 		Success: false,
+	// 		Message: err.Error(),
+	// 	})
+	// 	return
+	// }
+
+	err = database.UpdateResidents(b.BIMSdb, req.ResidentData.ID, req.ResidentData.LastName, req.ResidentData.FirstName,
+		req.ResidentData.MiddleName, req.ResidentData.Address, req.ResidentData.BirthDate, req.ResidentData.BirthPlace, req.ResidentData.Gender,
+		req.ResidentData.CivilStatus, req.ResidentData.ContactNumber, req.ResidentData.GuardianName, req.ResidentData.GurdianContactNumbers)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,
@@ -141,10 +169,9 @@ func (b *BimsConfiguration) UpdateReferrals(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	err = CreateReferralsPDF(req.ResidentID, req.ID, residentData.LastName, residentData.MiddleName, residentData.FirstName,
-		residentData.Address, residentData.ContactNumber, residentData.GuardianName, residentData.GurdianContactNumbers, req.ReasonForReferral,
-		req.HCGGGNumber, req.PhilHealthID, req.PhilHealthCategory, residentData.Gender, residentData.BirthDate, residentData.CivilStatus, residentData.Religion,
-		residentData.Occupation, residentData.BirthPlace)
+	err = CreateReferralsPDF(req.ResidentID, req.ID, req.ResidentData.LastName, req.ResidentData.MiddleName, req.ResidentData.FirstName,
+		req.ResidentData.Address, req.ResidentData.ContactNumber, req.ResidentData.GuardianName, req.ResidentData.GurdianContactNumbers, req.ReasonForReferral,
+		req.HCGGGNumber, req.PhilHealthID, req.PhilHealthCategory, req.ResidentData.Gender, req.ResidentData.BirthDate, req.ResidentData.CivilStatus, req.ResidentData.BirthPlace)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,

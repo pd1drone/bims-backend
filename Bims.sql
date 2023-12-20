@@ -37,8 +37,6 @@ CREATE TABLE `Residents` (
   `ContactNumber` varchar(255),
   `GuardianName` varchar(255),
   `GurdianContactNumber` varchar(255),
-  `Religion` varchar(255),
-  `Occupation` varchar(255),
   `IssuingOfficer` varchar(255),
   `DocumentType` varchar(255),
   `DocumentID` int
@@ -55,7 +53,10 @@ CREATE TABLE `Clearance` (
   `ResidentLastName` varchar(255),
   `ResidentFirstName` varchar(255),
   `ResidentMiddleName` varchar(255),
-  `Purpose` longtext
+  `Purpose` longtext,
+  `CedulaNo` varchar(255),
+  `PrecintNo` varchar(255),
+  `DocumentStatus` varchar(255)
 );
 
 CREATE TABLE `Referrals` (
@@ -69,7 +70,8 @@ CREATE TABLE `Referrals` (
   `ReasonForReferral` longtext,
   `ValidUntil` varchar(255),
   `IssuingOfficer` varchar(255),
-  `Remarks` longtext
+  `Remarks` longtext,
+  `DocumentStatus` varchar(255)
 );
 
 CREATE TABLE `Indigencies` (
@@ -80,8 +82,29 @@ CREATE TABLE `Indigencies` (
   `Reason` longtext,
   `ValidUntil` varchar(255),
   `IssuingOfficer` varchar(255),
-  `Remarks` longtext
+  `Remarks` longtext,
+  `DocumentStatus` varchar(255)
 );
+
+CREATE TABLE `BDRRMC` (
+  `ID` int PRIMARY KEY AUTO_INCREMENT,
+  `TypeOfRecord` varchar(255),
+  `PartiesInvolved` varchar(255),
+  `DateTime` varchar(255),
+  `Location` varchar(255),
+  `RecordDetails` longtext
+);
+
+CREATE TABLE `Incidents` (
+  `ID` int PRIMARY KEY AUTO_INCREMENT,
+  `CompliantFullName` varchar(255),
+  `Respondent` varchar(255),
+  `IncidentStatus` varchar(255),
+  `IncidentDateTime` varchar(255),
+  `IncidentLocation` varchar(255),
+  `IncidentNarration` longtext
+);
+
 
 -- insert barangay positions
 INSERT INTO Positions (Name,Description)VALUES('admin','admin');

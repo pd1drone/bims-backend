@@ -83,21 +83,25 @@ func Routes() {
 	r.Post("/new", newBims.New)
 
 	// Residents route
+	r.Get("/residentsxl", newBims.ReadResidentsXL)
 	r.Get("/residents", newBims.ReadResidents)
 	r.Delete("/residents", newBims.DeleteResidents)
 	r.Put("/residents", newBims.UpdateResidents)
 
 	// Indigencies route
+	r.Get("/indigenciesxl", newBims.ReadIndigenciesXL)
 	r.Get("/indigencies", newBims.ReadIndigencies)
 	r.Delete("/indigencies", newBims.DeleteIndigencies)
 	r.Put("/indigencies", newBims.UpdateIndigencies)
 
 	// Clearance route
+	r.Get("/clearancexl", newBims.ReadClearanceXL)
 	r.Get("/clearance", newBims.ReadClearance)
 	r.Delete("/clearance", newBims.DeleteClearance)
 	r.Put("/clearance", newBims.UpdateClearance)
 
 	// Referrals route
+	r.Get("/referralsxl", newBims.ReadReferralsXL)
 	r.Get("/referrals", newBims.ReadReferrals)
 	r.Delete("/referrals", newBims.DeleteReferrals)
 	r.Put("/referrals", newBims.UpdateReferrals)

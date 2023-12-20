@@ -8,7 +8,7 @@ import (
 )
 
 func CreateClearancePDF(residentID int64, documentID int64, formattedTime string, Birthday string, birthPlace string, fullName string,
-	Address string, CivilStatus string, Purpose string) error {
+	Address string, CivilStatus string, Purpose string, cedulaNo string, PrecintNo string, ValidUntil string) error {
 
 	// currentTime := time.Now()
 	// formattedTime := currentTime.Format("January 2, 2006")
@@ -243,14 +243,14 @@ func CreateClearancePDF(residentID int64, documentID int64, formattedTime string
 	pdf.Text("Precint No.:")
 	pdf.SetFont("timesbold", "", 12)
 	pdf.SetXY(430, 392)
-	pdf.Text(":  ")
+	pdf.Text(":  " + PrecintNo)
 
 	pdf.SetFont("times", "", 12)
 	pdf.SetXY(250, 404)
 	pdf.Text("Expiry Date:")
 	pdf.SetFont("timesbold", "", 12)
 	pdf.SetXY(430, 404)
-	pdf.Text(":  ")
+	pdf.Text(":  " + ValidUntil)
 
 	pdf.SetFont("times", "", 12)
 	pdf.SetXY(250, 416)

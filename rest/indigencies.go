@@ -11,14 +11,16 @@ import (
 )
 
 type Indigencies struct {
-	ID             int64  `json:"ID"`
-	ResidentID     int64  `json:"ResidentID"`
-	DateCreated    string `json:"DateCreated"`
-	DateUpdated    string `json:"DateUpdated"`
-	Reason         string `json:"Reason"`
-	ValidUntil     string `json:"ValidUntil"`
-	IssuingOfficer string `json:"IssuingOfficer"`
-	Remarks        string `json:"Remarks"`
+	ID             int64     `json:"ID"`
+	ResidentID     int64     `json:"ResidentID"`
+	DateCreated    string    `json:"DateCreated"`
+	DateUpdated    string    `json:"DateUpdated"`
+	Purpose        string    `json:"Purpose"`
+	ValidUntil     string    `json:"ValidUntil"`
+	IssuingOfficer string    `json:"IssuingOfficer"`
+	Remarks        string    `json:"Remarks"`
+	DocumentStatus string    `json:"DocumentStatus"`
+	ResidentData   Residents `json:"ResidentData"`
 }
 
 func (b *BimsConfiguration) ReadIndigencies(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +30,22 @@ func (b *BimsConfiguration) ReadIndigencies(w http.ResponseWriter, r *http.Reque
 	w.Header().Add("Access-Control-Allow-Headers", "*")
 
 	IndigenciesData, err := database.ReadIndigencies(b.BIMSdb)
+	if err != nil {
+		log.Print(err)
+		respondJSON(w, 400, nil)
+		return
+	}
+
+	respondJSON(w, 200, IndigenciesData)
+}
+
+func (b *BimsConfiguration) ReadIndigenciesXL(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Add("Access-Control-Allow-Origin", "*")
+	w.Header().Add("Access-Control-Allow-Methods", "*")
+	w.Header().Add("Access-Control-Allow-Headers", "*")
+
+	IndigenciesData, err := database.ReadIndigenciesXL(b.BIMSdb)
 	if err != nil {
 		log.Print(err)
 		respondJSON(w, 400, nil)
@@ -119,7 +137,7 @@ func (b *BimsConfiguration) UpdateIndigencies(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	err = database.UpdateIndigencies(b.BIMSdb, req.ID, req.Reason, req.Remarks)
+	err = database.UpdateIndigencies(b.BIMSdb, req.ID, req.Purpose, req.Remarks, req.DocumentStatus)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,
@@ -128,7 +146,17 @@ func (b *BimsConfiguration) UpdateIndigencies(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	// residentData, err := database.ReadResidentData(b.BIMSdb, req.ResidentID)
+	// if err != nil {
+	// 	respondJSON(w, 200, &UpdateResponse{
+	// 		Success: false,
+	// 		Message: err.Error(),
+	// 	})
+	// 	return
+	// }
+	err = database.UpdateResidents(b.BIMSdb, req.ResidentData.ID, req.ResidentData.LastName, req.ResidentData.FirstName,
+		req.ResidentData.MiddleName, req.ResidentData.Address, req.ResidentData.BirthDate, req.ResidentData.BirthPlace, req.ResidentData.Gender,
+		req.ResidentData.CivilStatus, req.ResidentData.ContactNumber, req.ResidentData.GuardianName, req.ResidentData.GurdianContactNumbers)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,
@@ -137,8 +165,8 @@ func (b *BimsConfiguration) UpdateIndigencies(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	fullName := residentData.FirstName + " " + residentData.MiddleName + " " + residentData.LastName
-	err = CreateIndigencyPDF(req.ResidentID, req.ID, fullName, residentData.Address, req.Reason)
+	fullName := req.ResidentData.FirstName + " " + req.ResidentData.MiddleName + " " + req.ResidentData.LastName
+	err = CreateIndigencyPDF(req.ResidentID, req.ID, fullName, req.ResidentData.Address, req.Purpose)
 	if err != nil {
 		respondJSON(w, 200, &UpdateResponse{
 			Success: false,

@@ -11,7 +11,7 @@ import (
 
 func CreateReferralsPDF(residentID int64, documentID int64, LastName string, MiddleName string, FirstName string, Address string,
 	MobileNumber string, ParentName string, ParentNumber string, Reason string, HCGGGnumber string, PhilHealthNumber string,
-	PhilHealthCategory string, Gender string, BirthDate string, CivilStatus string, Religion string, Occupation string, BirthPlace string) error {
+	PhilHealthCategory string, Gender string, BirthDate string, CivilStatus string, BirthPlace string) error {
 
 	// LastName := "Lim"
 	// MiddleName := "Navarro"
@@ -104,10 +104,6 @@ func CreateReferralsPDF(residentID int64, documentID int64, LastName string, Mid
 	pdf.Text(BirthPlace)
 	pdf.SetXY(400, 249)
 	pdf.Text(CivilStatus)
-	pdf.SetXY(400, 261)
-	pdf.Text(Religion)
-	pdf.SetXY(400, 273)
-	pdf.Text(Occupation)
 
 	age, err := GetAge(BirthDate)
 
