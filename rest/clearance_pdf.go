@@ -96,42 +96,42 @@ func CreateClearancePDF(residentID int64, documentID int64, formattedTime string
 	pdf.Text("KAGAWAD:")
 
 	pdf.SetXY(40, 200)
-	pdf.Text("NOEL B. ASTRERO")
+	pdf.Text("Jonel V. Fabroa")
 
 	pdf.SetXY(40, 230)
-	pdf.Text("ROSALIE A. DE OCA")
+	pdf.Text("Rosalie A. De Oca")
 
 	pdf.SetXY(40, 260)
-	pdf.Text("MELINDA M. LAGUMEN")
+	pdf.Text("Melinda M. Lagumen")
 
 	pdf.SetXY(40, 290)
-	pdf.Text("ARIEL C. TORRES")
+	pdf.Text("Ricardo M. Tubog")
 
 	pdf.SetXY(40, 320)
-	pdf.Text("CAMILLE MIKAELA M. MALAPITAN")
+	pdf.Text("Juan Paulo R. Martin")
 
 	pdf.SetXY(40, 350)
-	pdf.Text("NICHOLAS G. DUMPIT II")
+	pdf.Text("Arial C. Torres")
 
 	pdf.SetXY(40, 380)
-	pdf.Text("FRANCIS B. YABAO")
+	pdf.Text("Camille Mikaela M. Malapitan")
 
 	pdf.SetXY(40, 410)
-	pdf.Text("JUAN PAULO R. MARTIN")
+	pdf.Text("Shereena B. Tan")
 	pdf.SetFont("timesitalic", "", 10)
 	pdf.SetXY(40, 420)
 	pdf.Text("SK Chairperson")
 
 	pdf.SetXY(40, 450)
 	pdf.SetFont("timesbold", "", 10)
-	pdf.Text("JERICA P. PAMPLONA")
+	pdf.Text("Jerica P. Pamplona")
 	pdf.SetFont("times", "", 10)
 	pdf.SetXY(40, 460)
 	pdf.Text("Barangay Treasurer")
 
 	pdf.SetXY(40, 490)
 	pdf.SetFont("timesbold", "", 10)
-	pdf.Text("RAMIL B. ASTERO")
+	pdf.Text("Ramil B. Astero")
 	pdf.SetFont("times", "", 10)
 	pdf.SetXY(40, 500)
 	pdf.Text("Barangay Secretary")
@@ -253,17 +253,8 @@ func CreateClearancePDF(residentID int64, documentID int64, formattedTime string
 	pdf.Text(":  " + ValidUntil)
 
 	pdf.SetFont("times", "", 12)
-	pdf.SetXY(250, 416)
-	pdf.Text("R.B.I No.:")
-	pdf.SetFont("timesbold", "", 12)
-	pdf.SetXY(430, 416)
-	pdf.Text(":  ")
-
-	pdf.SetFont("times", "", 12)
-	pdf.SetXY(250, 450)
+	pdf.SetXY(300, 450)
 	pdf.Text("Verified & Issued by:")
-	pdf.SetXY(450, 450)
-	pdf.Text("Noted by:")
 
 	pdf.SetFont("times", "", 12)
 	pdf.SetXY(630, 380)
@@ -283,18 +274,11 @@ func CreateClearancePDF(residentID int64, documentID int64, formattedTime string
 	pdf.SetXY(640, 550)
 	pdf.Text("Right Thumb Mark")
 
-	pdf.SetFont("timesbold", "", 14)
-	pdf.SetXY(250, 538)
-	pdf.Text("NOEL B. ASTRERO")
-	pdf.SetFont("times", "", 12)
-	pdf.SetXY(250, 550)
-	pdf.Text("Barangay Kagawad")
-
 	pdf.SetFont("timesbold", "", 16)
-	pdf.SetXY(450, 538)
+	pdf.SetXY(350, 538)
 	pdf.Text("DINO C. GENESTON")
 	pdf.SetFont("times", "", 12)
-	pdf.SetXY(450, 550)
+	pdf.SetXY(350, 550)
 	pdf.Text("Barangay Chairperson")
 
 	err = createDirectoryIfNotExist("/root/bims-backend/files/")

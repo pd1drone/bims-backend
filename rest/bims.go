@@ -106,6 +106,18 @@ func Routes() {
 	r.Delete("/referrals", newBims.DeleteReferrals)
 	r.Put("/referrals", newBims.UpdateReferrals)
 
+	// BDRRMC route
+	r.Get("/bdrrmc", newBims.ReadBDRRMC)
+	r.Delete("/bdrrmc", newBims.DeleteBDRRMC)
+	r.Put("/bdrrmc", newBims.UpdateBDRRMC)
+	r.Post("/bdrrmc", newBims.CreateBDRRMC)
+
+	// Incidents route
+	r.Get("/incidents", newBims.ReadIncidents)
+	r.Delete("/incidents", newBims.DeleteIncidents)
+	r.Put("/incidents", newBims.UpdateIncidents)
+	r.Post("/incidents", newBims.CreateIncidents)
+
 	// Get Positions route
 	r.Get("/positions", newBims.ReadPositions)
 
@@ -115,6 +127,10 @@ func Routes() {
 	r.Get("/indigencies/{residentID}/{documentID}/{filename}", newBims.ServeIndigenciesPDF)
 	// GET Referrals PDF
 	r.Get("/referrals/{residentID}/{documentID}/{filename}", newBims.ServeReferralsPDF)
+	// GET BDRRMC PDF
+	r.Get("/bdrrmc/{ID}/{filename}", newBims.ServeBDRRMCpdf)
+	// GET Incidents PDF
+	r.Get("/incidents/{ID}/{filename}", newBims.ServeIncidentsPDF)
 
 	r.Get("/graph_data", newBims.ReadMonthlyTotalGraph)
 

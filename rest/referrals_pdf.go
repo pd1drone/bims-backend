@@ -55,59 +55,103 @@ func CreateReferralsPDF(residentID int64, documentID int64, LastName string, Mid
 	// Draw pdf onto page
 	pdf.UseImportedTemplate(tpl1, 0, 0, 0, 0)
 
-	pdf.SetFontSize(12)
-	pdf.SetXY(125, 177)
+	// Convert the string to a slice of bytes
+	bytes := []byte(MiddleName)
+
+	// Get the first byte (ASCII code of the first character)
+	firstByte := bytes[0]
+
+	// Convert the first byte to a rune
+	firstCharacter := rune(firstByte)
+
+	pdf.SetFontSize(10)
+	pdf.SetXY(145, 202)
 	pdf.Text(LastName)
-	pdf.SetXY(188, 177)
-	pdf.Text(MiddleName)
-	pdf.SetXY(240, 177)
+	pdf.SetXY(205, 202)
+	pdf.Text(string(firstCharacter))
+	pdf.SetXY(230, 202)
 	pdf.Text(FirstName)
 
 	words := strings.Fields(Address)
-	yData := 189.0
+	yData := 212.0
 	for i := 0; i < len(words); i += 4 {
 		end := i + 4
 		if end > len(words) {
 			end = len(words)
 		}
 		chunk := strings.Join(words[i:end], " ")
-		pdf.SetXY(120, yData)
+		pdf.SetXY(145, yData)
 		pdf.Text(chunk)
 		yData = yData + 12
 	}
 
-	pdf.SetXY(120, 225)
+	pdf.SetXY(145, 244)
 	pdf.Text(MobileNumber)
 
-	pdf.SetXY(150, 237)
+	pdf.SetXY(165, 254)
 	pdf.Text(ParentName)
 
-	pdf.SetXY(150, 249)
+	pdf.SetXY(165, 264)
 	pdf.Text(ParentNumber)
 
-	pdf.SetXY(130, 424)
-	pdf.Text(Reason)
+	reasonRunes := []rune(Reason)
+	purposeyData := 420.0
+	var charBuffer string
+	var lineNumber = 0
+	for i := 0; i < len(reasonRunes); i++ {
+		character := string(reasonRunes[i])
+		charBuffer += character
+		if lineNumber > 0 {
+			if len(charBuffer) >= 60 && character == " " {
+				pdf.SetXY(80, purposeyData)
+				pdf.Text(charBuffer)
+				purposeyData += 10
+				charBuffer = ""
+				lineNumber++
+			}
+		} else {
+			if len(charBuffer) >= 86 && character == " " {
+				pdf.SetXY(145, purposeyData)
+				pdf.Text(charBuffer)
+				purposeyData += 10
+				charBuffer = ""
+				lineNumber++
+			}
+		}
+	}
 
-	pdf.SetXY(400, 165)
+	if lineNumber == 0 {
+		if len(charBuffer) > 0 {
+			pdf.SetXY(145, purposeyData)
+			pdf.Text(charBuffer)
+		}
+	} else {
+		if len(charBuffer) > 0 {
+			pdf.SetXY(80, purposeyData)
+			pdf.Text(charBuffer)
+		}
+	}
+
+	pdf.SetXY(400, 193)
 	pdf.Text(formattedTime)
-	pdf.SetXY(400, 177)
+	pdf.SetXY(400, 203)
 	pdf.Text(HCGGGnumber)
-	pdf.SetXY(400, 189)
-	pdf.Text(PhilHealthNumber)
-	pdf.SetXY(400, 201)
-	pdf.Text(PhilHealthCategory)
 	pdf.SetXY(400, 213)
+	pdf.Text(PhilHealthNumber)
+	pdf.SetXY(400, 223)
+	pdf.Text(PhilHealthCategory)
+	pdf.SetXY(400, 233)
 	pdf.Text(Gender)
-	pdf.SetXY(400, 225)
+	pdf.SetXY(400, 243)
 	pdf.Text(BirthDate)
-	pdf.SetXY(400, 237)
+	pdf.SetXY(400, 253)
 	pdf.Text(BirthPlace)
-	pdf.SetXY(400, 249)
+	pdf.SetXY(400, 263)
 	pdf.Text(CivilStatus)
 
 	age, err := GetAge(BirthDate)
 
-	pdf.SetXY(520, 225)
+	pdf.SetXY(490, 243)
 	pdf.Text(age)
 
 	err = createDirectoryIfNotExist("/root/bims-backend/files/")

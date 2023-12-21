@@ -88,21 +88,27 @@ CREATE TABLE `Indigencies` (
 
 CREATE TABLE `BDRRMC` (
   `ID` int PRIMARY KEY AUTO_INCREMENT,
+  `DateCreated` varchar(255),
+  `DateUpdated` varchar(255),
   `TypeOfRecord` varchar(255),
   `PartiesInvolved` varchar(255),
   `DateTime` varchar(255),
   `Location` varchar(255),
-  `RecordDetails` longtext
+  `RecordDetails` longtext,
+  `IssuingOfficer` varchar(255)
 );
 
 CREATE TABLE `Incidents` (
   `ID` int PRIMARY KEY AUTO_INCREMENT,
+  `DateCreated` varchar(255),
+  `DateUpdated` varchar(255),
   `CompliantFullName` varchar(255),
   `Respondent` varchar(255),
   `IncidentStatus` varchar(255),
   `IncidentDateTime` varchar(255),
   `IncidentLocation` varchar(255),
-  `IncidentNarration` longtext
+  `IncidentNarration` longtext,
+  `IssuingOfficer` varchar(255)
 );
 
 
