@@ -21,6 +21,8 @@ type TotalNumberOfCreatedDocumentsPerMonth struct {
 	Referrals   int `json:"Referrals"`
 	Clearance   int `json:"Clearance"`
 	Residents   int `json:"Residents"`
+	BDRRMC      int `json:"BDRRMC"`
+	Incidents   int `json:"Incidents"`
 }
 
 func (b *BimsConfiguration) GetTotalNumberOfCreatedDocumentsPerMonth(w http.ResponseWriter, r *http.Request) {
@@ -49,11 +51,23 @@ func (b *BimsConfiguration) GetTotalNumberOfCreatedDocumentsPerMonth(w http.Resp
 		respondJSON(w, 400, nil)
 	}
 
+	BDRRMC, err := database.GetTotalBDRRMCPerMonth(b.BIMSdb)
+	if err != nil {
+		respondJSON(w, 400, nil)
+	}
+
+	Incidents, err := database.GetTotalIncidentsPerMonth(b.BIMSdb)
+	if err != nil {
+		respondJSON(w, 400, nil)
+	}
+
 	resp := &TotalNumberOfCreatedDocumentsPerMonth{
 		Indigencies: len(Indigencies),
 		Referrals:   len(Referrals),
 		Clearance:   len(Clearance),
 		Residents:   len(Residents),
+		BDRRMC:      len(BDRRMC),
+		Incidents:   len(Incidents),
 	}
 
 	respondJSON(w, 200, resp)
@@ -97,6 +111,26 @@ func (b *BimsConfiguration) ReadMonthlyTotalGraph(w http.ResponseWriter, r *http
 	Dataset = append(Dataset, &DataSets{
 		Label: "Referrals",
 		Data:  ReferralsCount,
+	})
+
+	_, IncidentsCount, err := b.MonthlyIncidents()
+	if err != nil {
+		respondJSON(w, 400, nil)
+	}
+
+	Dataset = append(Dataset, &DataSets{
+		Label: "Incidents",
+		Data:  IncidentsCount,
+	})
+
+	_, BDRRMCcount, err := b.MonthlyBDRRMC()
+	if err != nil {
+		respondJSON(w, 400, nil)
+	}
+
+	Dataset = append(Dataset, &DataSets{
+		Label: "BDRRMC",
+		Data:  BDRRMCcount,
 	})
 
 	resp.DataSets = Dataset
@@ -230,6 +264,100 @@ func (b *BimsConfiguration) MonthlyReferrals() ([]string, []int, error) {
 		// Count the entries for the current date
 		count := 0
 		for _, entry := range ReferralData {
+			if entry.DateCreated == currentDate.Format("2006-01-02") {
+				count++
+			}
+		}
+
+		// Append the formatted date to Labels and the count to countData
+		Labels = append(Labels, formattedDate)
+		countData = append(countData, count)
+
+		// Move to the next day
+		currentDate = currentDate.AddDate(0, 0, 1)
+	}
+
+	return Labels, countData, nil
+}
+
+func (b *BimsConfiguration) MonthlyBDRRMC() ([]string, []int, error) {
+	BdrrmcData, err := database.GetTotalBDRRMCPerMonth(b.BIMSdb)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Initialize arrays for labels and count data
+	var Labels []string
+	var countData []int
+
+	// Calculate the date range from "2023-09-01" to today    // Get the current date
+	current := time.Now()
+
+	// Extract the month from the current date
+	currentMonth := current.Month()
+
+	// Create a new date for the same month with day 1
+	startDate := time.Date(current.Year(), currentMonth, 1, 0, 0, 0, 0, current.Location())
+
+	//startDate, _ := time.Parse("2006-01-02", "2023-09-01")
+	endDate := time.Now()
+
+	// Loop through the date range
+	currentDate := startDate
+	for currentDate.Before(endDate) || currentDate.Equal(endDate) {
+		// Format the date to "Sep 1" style
+		formattedDate := currentDate.Format("Jan 2")
+
+		// Count the entries for the current date
+		count := 0
+		for _, entry := range BdrrmcData {
+			if entry.DateCreated == currentDate.Format("2006-01-02") {
+				count++
+			}
+		}
+
+		// Append the formatted date to Labels and the count to countData
+		Labels = append(Labels, formattedDate)
+		countData = append(countData, count)
+
+		// Move to the next day
+		currentDate = currentDate.AddDate(0, 0, 1)
+	}
+
+	return Labels, countData, nil
+}
+
+func (b *BimsConfiguration) MonthlyIncidents() ([]string, []int, error) {
+	IcidentsData, err := database.GetTotalIncidentsPerMonth(b.BIMSdb)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// Initialize arrays for labels and count data
+	var Labels []string
+	var countData []int
+
+	// Calculate the date range from "2023-09-01" to today    // Get the current date
+	current := time.Now()
+
+	// Extract the month from the current date
+	currentMonth := current.Month()
+
+	// Create a new date for the same month with day 1
+	startDate := time.Date(current.Year(), currentMonth, 1, 0, 0, 0, 0, current.Location())
+
+	//startDate, _ := time.Parse("2006-01-02", "2023-09-01")
+	endDate := time.Now()
+
+	// Loop through the date range
+	currentDate := startDate
+	for currentDate.Before(endDate) || currentDate.Equal(endDate) {
+		// Format the date to "Sep 1" style
+		formattedDate := currentDate.Format("Jan 2")
+
+		// Count the entries for the current date
+		count := 0
+		for _, entry := range IcidentsData {
 			if entry.DateCreated == currentDate.Format("2006-01-02") {
 				count++
 			}

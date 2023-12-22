@@ -133,6 +133,9 @@ func Routes() {
 	r.Get("/incidents/{ID}/{filename}", newBims.ServeIncidentsPDF)
 
 	r.Get("/graph_data", newBims.ReadMonthlyTotalGraph)
+	r.Get("/piechart_data", newBims.GetPieChartData)
+
+	r.Get("/piechart_counter", newBims.GetPieChartDataCounter)
 
 	r.Get("/total_monthly_data", newBims.GetTotalNumberOfCreatedDocumentsPerMonth)
 
