@@ -70,8 +70,8 @@ func (b *BimsConfiguration) GetPieChartData(w http.ResponseWriter, r *http.Reque
 		respondJSON(w, 400, nil)
 	}
 
-	printing := len(ClearancePrinting) + len(IndigenciesPrinting) + len(ReferralsPrinting)
-	printted := len(ClearancePrinted) + len(IndigenciesPrinted) + len(ReferralsPrinted)
+	printing := len(ClearancePrinted) + len(IndigenciesPrinted) + len(ReferralsPrinted)
+	printted := len(ClearancePrinting) + len(IndigenciesPrinting) + len(ReferralsPrinting)
 	claimed := len(ClearanceClaimed) + len(IndigenciesClaimed) + len(ReferralsClaimed)
 
 	// labels: ['For print records', 'Printed Records', 'Claimed records'],
