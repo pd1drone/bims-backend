@@ -25,7 +25,7 @@ func Login(db sqlx.Ext, username string, password string) (*LoginResponse, error
 	var isadmin bool
 
 	rows, err := db.Queryx(`SELECT u.ID, u.Username, u.Password, u.FullName, u.ProfileLink, u.IsAdmin FROM Users as u
-	WHERE u.Username=? AND u.Password=?`,
+	WHERE BINARY u.Username=? AND BINARY u.Password=?`,
 		username, password)
 
 	if err != nil {
