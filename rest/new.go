@@ -209,6 +209,12 @@ func (b *BimsConfiguration) New(w http.ResponseWriter, r *http.Request) {
 			Message: "",
 		})
 		return
+	} else {
+		respondJSON(w, 200, &NewResponse{
+			Success: false,
+			Message: "Invalid Document type",
+		})
+		return
 	}
 
 }
